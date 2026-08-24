@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FÚTBOL — Pasión Brutal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --paper:#f2efe4;
+    --lime:#c9ff00;
+    --orange:#ff4413;
+    --blue:#1338ff;
+    --border:6px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Space Mono', monospace;
+    overflow-x:hidden;
+    position:relative;
+  }
+  h1,h2,h3,.display{
+    font-family:'Anton', sans-serif;
+    text-transform:uppercase;
+    line-height:0.9;
+    letter-spacing:-0.01em;
+  }
+  #bg-canvas{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    width:100%;
+    height:100%;
+    display:block;
+  }
+  .wrap{
+    position:relative;
+    z-index:2;
+  }
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:50;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 32px;
+    border-bottom:var(--border) solid var(--ink);
+    background:var(--paper);
+    mix-blend-mode:normal;
+  }
+  nav .logo{
+    font-family:'Anton', sans-serif;
+    font-size:1.6rem;
+    text-transform:uppercase;
+  }
+  nav .logo span{ color:var(--orange); }
+  nav ul{
+    display:flex;
+    list-style:none;
+    gap:28px;
+    font-weight:700;
+    font-size:0.85rem;
+    text-transform:uppercase;
+  }
+  nav ul a{
+    color:var(--ink);
+    text-decoration:none;
+    border-bottom:3px solid transparent;
+    padding-bottom:2px;
+  }
+  nav ul a:hover{ border-color:var(--orange); }
+
+  /* ---------- MARQUEE ---------- */
+  .marquee{
+    position:relative;
+    z-index:40;
+    margin-top:66px;
+    background:var(--ink);
+    color:var(--lime);
+    border-bottom:var(--border) solid var(--ink);
+    overflow:hidden;
+    white-space:nowrap;
+    padding:10px 0;
+  }
+  .marquee-track{
+    display:inline-block;
+    padding-left:100%;
+    animation:scroll-left 18s linear infinite;
+    font-weight:700;
+    font-size:0.9rem;
+    letter-spacing:0.08em;
+  }
+  .marquee-track span{ margin:0 24px; }
+  @keyframes scroll-left{
+    0%{ transform:translateX(0); }
+    100%{ transform:translateX(-100%); }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:calc(100vh - 66px - 40px);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:60px 32px;
+  }
+  .hero-title{
+    font-size:clamp(3.5rem, 13vw, 10rem);
+    color:var(--ink);
+    -webkit-text-stroke:2px var(--ink);
+  }
+  .hero-title .accent{
+    color:var(--paper);
+    -webkit-text-stroke:2px var(--ink);
+    text-shadow: 6px 6px 0 var(--orange);
+  }
+  .hero-sub{
+    max-width:520px;
+    margin-top:24px;
+    font-size:1rem;
+    line-height:1.6;
+    background:var(--paper);
+    border:3px solid var(--ink);
+    padding:16px 20px;
+    box-shadow:8px 8px 0 var(--ink);
+  }
+  .hero-cta{
+    margin-top:32px;
+    display:inline-flex;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    text-transform:uppercase;
+    font-size:0.85rem;
+    padding:16px 28px;
+    border:3px solid var(--ink);
+    background:var(--lime);
+    color:var(--ink);
+    text-decoration:none;
+    box-shadow:6px 6px 0 var(--ink);
+    transition:transform .15s ease;
+    cursor:pointer;
+  }
+  .btn.alt{ background:var(--ink); color:var(--paper); }
+  .btn:hover{ transform:translate(-3px,-3px); box-shadow:9px 9px 0 var(--ink); }
+  .btn:active{ transform:translate(0,0); box-shadow:3px 3px 0 var(--ink); }
+
+  .scroll-cue{
+    position:absolute;
+    bottom:24px; right:32px;
+    font-size:0.75rem;
+    font-weight:700;
+    writing-mode:vertical-rl;
+    letter-spacing:0.15em;
+  }
+
+  /* ---------- SECTION GENERIC ---------- */
+  section{
+    position:relative;
+    z-index:2;
+    padding:100px 32px;
+    border-top:var(--border) solid var(--ink);
+    background:var(--paper);
+  }
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:20px;
+    margin-bottom:56px;
+    flex-wrap:wrap;
+  }
+  .section-head h2{ font-size:clamp(2.2rem, 6vw, 4.2rem); }
+  .tag{
+    font-weight:700;
+    font-size:0.75rem;
+    text-transform:uppercase;
+    background:var(--ink);
+    color:var(--lime);
+    padding:6px 12px;
+    letter-spacing:0.1em;
+  }
+
+  .reveal{
+    opacity:0;
+    transform:translateY(40px);
+    transition:opacity .7s ease, transform .7s ease;
+  }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* ---------- STATS ---------- */
+  .stats-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:0;
+    border:3px solid var(--ink);
+  }
+  .stat{
+    padding:36px 20px;
+    border-right:3px solid var(--ink);
+    text-align:center;
+  }
+  .stat:last-child{ border-right:none; }
+  .stat .num{
+    font-family:'Anton', sans-serif;
+    font-size:clamp(2.4rem,5vw,4rem);
+    color:var(--orange);
+  }
+  .stat .label{
+    margin-top:8px;
+    font-size:0.75rem;
+    text-transform:uppercase;
+    font-weight:700;
+    letter-spacing:0.08em;
+  }
+
+  /* ---------- MATCHES ---------- */
+  .matches{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:24px;
+  }
+  .match-card{
+    border:3px solid var(--ink);
+    background:var(--paper);
+    padding:24px;
+    box-shadow:8px 8px 0 var(--ink);
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .match-card .comp{
+    font-size:0.7rem;
+    font-weight:700;
+    text-transform:uppercase;
+    color:var(--blue);
+    letter-spacing:0.1em;
+  }
+  .match-teams{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'Anton', sans-serif;
+    font-size:1.4rem;
+    text-transform:uppercase;
+  }
+  .match-teams .vs{
+    font-family:'Space Mono', monospace;
+    font-size:0.8rem;
+    color:var(--orange);
+    font-weight:700;
+  }
+  .match-meta{
+    display:flex;
+    justify-content:space-between;
+    font-size:0.75rem;
+    font-weight:700;
+    border-top:3px dashed var(--ink);
+    padding-top:12px;
+  }
+
+  /* ---------- FEATURES / SKILLS ---------- */
+  .features{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+  }
+  .feature{
+    border:3px solid var(--ink);
+    padding:28px;
+    background:var(--lime);
+    box-shadow:8px 8px 0 var(--ink);
+  }
+  .feature:nth-child(2){ background:var(--orange); color:var(--paper); }
+  .feature:nth-child(3){ background:var(--ink); color:var(--paper); }
+  .feature h3{ font-size:1.6rem; margin-bottom:12px; }
+  .feature p{ font-size:0.85rem; line-height:1.6; }
+
+  /* ---------- BALL SHOWCASE ---------- */
+  .ball-section{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:40px;
+    align-items:center;
+  }
+  .ball-copy p{
+    font-size:1rem;
+    line-height:1.8;
+    margin-bottom:16px;
+  }
+  .ball-hole{
+    height:420px;
+    border:3px solid var(--ink);
+    background:transparent;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:var(--border) solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    padding:70px 32px 30px;
+  }
+  .footer-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr;
+    gap:40px;
+    margin-bottom:60px;
+  }
+  footer h2{ font-size:clamp(2.4rem,6vw,4.5rem); color:var(--lime); }
+  footer .col h4{
+    font-size:0.8rem;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    margin-bottom:16px;
+    color:var(--orange);
+  }
+  footer .col a{
+    display:block;
+    color:var(--paper);
+    text-decoration:none;
+    font-size:0.85rem;
+    margin-bottom:10px;
+    opacity:0.85;
+  }
+  footer .col a:hover{ opacity:1; text-decoration:underline; }
+  .newsletter{
+    display:flex;
+    gap:0;
+    margin-top:16px;
+    max-width:360px;
+  }
+  .newsletter input{
+    flex:1;
+    padding:14px;
+    border:3px solid var(--paper);
+    background:transparent;
+    color:var(--paper);
+    font-family:'Space Mono', monospace;
+    font-size:0.8rem;
+  }
+  .newsletter button{
+    padding:14px 18px;
+    border:3px solid var(--paper);
+    border-left:none;
+    background:var(--lime);
+    color:var(--ink);
+    font-weight:700;
+    cursor:pointer;
+    text-transform:uppercase;
+    font-size:0.8rem;
+  }
+  .fine-print{
+    border-top:2px solid rgba(242,239,228,0.3);
+    padding-top:20px;
+    font-size:0.7rem;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    opacity:0.7;
+  }
+
+  @media (max-width:900px){
+    .stats-grid{ grid-template-columns:repeat(2,1fr); }
+    .stat{ border-bottom:3px solid var(--ink); }
+    .stat:nth-child(2n){ border-right:none; }
+    .features{ grid-template-columns:1fr; }
+    .ball-section{ grid-template-columns:1fr; }
+    .footer-grid{ grid-template-columns:1fr; }
+    nav ul{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="wrap">
+
+  <nav>
+    <div class="logo">FÚTBOL<span>.</span></div>
+    <ul>
+      <li><a href="#stats">Números</a></li>
+      <li><a href="#matches">Partidos</a></li>
+      <li><a href="#skills">Estilo</a></li>
+      <li><a href="#ball">La Esfera</a></li>
+    </ul>
+  </nav>
+
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>⚽ PASIÓN BRUTAL</span><span>⚽ 90 MINUTOS NO ALCANZAN</span><span>⚽ EL CAMPO ES SAGRADO</span><span>⚽ CADA GOL CUENTA UNA HISTORIA</span><span>⚽ PASIÓN BRUTAL</span><span>⚽ 90 MINUTOS NO ALCANZAN</span><span>⚽ EL CAMPO ES SAGRADO</span><span>⚽ CADA GOL CUENTA UNA HISTORIA</span>
+    </div>
+  </div>
+
+  <header class="hero">
+    <h1 class="hero-title">FÚTBOL<br><span class="accent">SIN&nbsp;FILTRO</span></h1>
+    <p class="hero-sub">Una vitrina brutalista dedicada al deporte más lindo del mundo. Tipografía enorme, contraste duro y una esfera 3D que gira detrás de todo. Sin medias tintas.</p>
+    <div class="hero-cta">
+      <a class="btn" href="#matches">Ver partidos</a>
+      <a class="btn alt" href="#ball">La esfera 3D</a>
+    </div>
+    <div class="scroll-cue">SCROLL ↓</div>
+  </header>
+
+  <section id="stats">
+    <div class="section-head reveal">
+      <h2>En Números</h2>
+      <span class="tag">Datos demo</span>
+    </div>
+    <div class="stats-grid reveal">
+      <div class="stat"><div class="num" data-count="211">0</div><div class="label">Países federados</div></div>
+      <div class="stat"><div class="num" data-count="32">0</div><div class="label">Equipos en un mundial</div></div>
+      <div class="stat"><div class="num" data-count="90">0</div><div class="label">Minutos reglamentarios</div></div>
+      <div class="stat"><div class="num" data-count="11">0</div><div class="label">Jugadores por equipo</div></div>
+    </div>
+  </section>
+
+  <section id="matches">
+    <div class="section-head reveal">
+      <h2>Próximos<br>Partidos</h2>
+      <span class="tag">Fixture ilustrativo</span>
+    </div>
+    <div class="matches reveal">
+      <div class="match-card">
+        <div class="comp">Liga Brutal — Fecha 12</div>
+        <div class="match-teams">NORTE <span class="vs">VS</span> SUR</div>
+        <div class="match-meta"><span>SAB 21:00</span><span>ESTADIO CENTRAL</span></div>
+      </div>
+      <div class="match-card">
+        <div class="comp">Copa Brutal — Cuartos</div>
+        <div class="match-teams">ESTE <span class="vs">VS</span> OESTE</div>
+        <div class="match-meta"><span>DOM 18:30</span><span>ARENA RÍO</span></div>
+      </div>
+      <div class="match-card">
+        <div class="comp">Liga Brutal — Fecha 13</div>
+        <div class="match-teams">ROJO <span class="vs">VS</span> NEGRO</div>
+        <div class="match-meta"><span>MIE 20:00</span><span>CAMPO ALTO</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="section-head reveal">
+      <h2>Estilo<br>de Juego</h2>
+      <span class="tag">Filosofía</span>
+    </div>
+    <div class="features reveal">
+      <div class="feature">
+        <h3>Presión Alta</h3>
+        <p>Recuperar la pelota lo más cerca posible del arco rival. Intensidad desde el primer minuto hasta el último.</p>
+      </div>
+      <div class="feature">
+        <h3>Posesión</h3>
+        <p>El balón manda. Circulación rápida, triángulos permanentes y paciencia para encontrar el espacio.</p>
+      </div>
+      <div class="feature">
+        <h3>Transición</h3>
+        <p>Del ataque a la defensa en segundos. El equipo que mejor transiciona, controla el partido.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="ball">
+    <div class="section-head reveal">
+      <h2>La Esfera</h2>
+      <span class="tag">Three.js live</span>
+    </div>
+    <div class="ball-section reveal">
+      <div class="ball-copy">
+        <p>Detrás de toda esta página gira, en tiempo real, un balón wireframe renderizado con <strong>Three.js</strong>. Reacciona al movimiento del mouse y flota entre partículas.</p>
+        <p>Es el mismo motor que impulsa el fondo completo del sitio: nada de imágenes estáticas, todo es geometría calculada cuadro a cuadro.</p>
+        <a class="btn" href="#" id="pulse-btn">Pulso de energía</a>
+      </div>
+      <div class="ball-hole"></div>
+    </div>
+  </section>
+
+  <footer>
+    <h2>¿Jugamos?</h2>
+    <div class="footer-grid" style="margin-top:40px;">
+      <div class="col">
+        <h4>Sobre este sitio</h4>
+        <p style="font-size:0.85rem; line-height:1.7; opacity:0.85; max-width:360px;">Página demo construida como pieza de diseño brutalista con Three.js. Todos los equipos, jugadores y cifras son ilustrativos.</p>
+        <div class="newsletter">
+          <input type="email" placeholder="tu@email.com" id="news-email">
+          <button id="news-btn" type="button">Unirme</button>
+        </div>
+      </div>
+      <div class="col">
+        <h4>Secciones</h4>
+        <a href="#stats">Números</a>
+        <a href="#matches">Partidos</a>
+        <a href="#skills">Estilo</a>
+        <a href="#ball">La Esfera</a>
+      </div>
+      <div class="col">
+        <h4>Tecnología</h4>
+        <a href="https://threejs.org" target="_blank" rel="noopener">Three.js</a>
+        <a href="#">HTML / CSS puro</a>
+        <a href="#">Sin frameworks</a>
+      </div>
+    </div>
+    <div class="fine-print">
+      <span>© 2026 FÚTBOL SIN FILTRO — Proyecto demo</span>
+      <span>Diseño brutalista · Contenido ficticio</span>
+    </div>
+  </footer>
+
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const canvas = document.getElementById('bg-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.z = 9;
+
+// --- Wireframe ball (truncated icosahedron-ish via icosahedron) ---
+const ballGeo = new THREE.IcosahedronGeometry(2.6, 1);
+const ballMat = new THREE.MeshBasicMaterial({ color: 0x0a0a0a, wireframe: true });
+const ball = new THREE.Mesh(ballGeo, ballMat);
+scene.add(ball);
+
+const ballGeo2 = new THREE.IcosahedronGeometry(2.61, 1);
+const ballMat2 = new THREE.MeshBasicMaterial({ color: 0xff4413, wireframe: true, transparent: true, opacity: 0.35 });
+const ballGlow = new THREE.Mesh(ballGeo2, ballMat2);
+ballGlow.scale.setScalar(1.03);
+scene.add(ballGlow);
+
+// --- Particle field ---
+const PARTICLE_COUNT = 500;
+const positions = new Float32Array(PARTICLE_COUNT * 3);
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  positions[i * 3] = (Math.random() - 0.5) * 30;
+  positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+  positions[i * 3 + 2] = (Math.random() - 0.5) * 20 - 5;
+}
+const particleGeo = new THREE.BufferGeometry();
+particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+const particleMat = new THREE.PointsMaterial({ color: 0x1338ff, size: 0.05, transparent: true, opacity: 0.6 });
+const particles = new THREE.Points(particleGeo, particleMat);
+scene.add(particles);
+
+let mouseX = 0, mouseY = 0;
+window.addEventListener('mousemove', (e) => {
+  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+let pulseUntil = 0;
+document.getElementById('pulse-btn').addEventListener('click', (e) => {
+  e.preventDefault();
+  pulseUntil = performance.now() + 900;
+});
+
+function resize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+window.addEventListener('resize', resize);
+
+const clock = new THREE.Clock();
+function animate() {
+  const t = clock.getElapsedTime();
+  const now = performance.now();
+
+  let scale = 1;
+  if (now < pulseUntil) {
+    const p = 1 - (pulseUntil - now) / 900;
+    scale = 1 + Math.sin(p * Math.PI) * 0.35;
+  }
+  ball.scale.setScalar(scale);
+  ballGlow.scale.setScalar(scale * 1.04);
+
+  ball.rotation.x = t * 0.15 + mouseY * 0.3;
+  ball.rotation.y = t * 0.22 + mouseX * 0.3;
+  ballGlow.rotation.copy(ball.rotation);
+
+  camera.position.x += (mouseX * 1.2 - camera.position.x) * 0.03;
+  camera.position.y += (-mouseY * 0.8 - camera.position.y) * 0.03;
+  camera.lookAt(0, 0, 0);
+
+  particles.rotation.y = t * 0.02;
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();
+
+// --- Scroll reveal ---
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) entry.target.classList.add('in');
+  });
+}, { threshold: 0.15 });
+revealEls.forEach((el) => io.observe(el));
+
+// --- Counter animation ---
+const counters = document.querySelectorAll('.num[data-count]');
+let countersStarted = false;
+function startCounters() {
+  if (countersStarted) return;
+  countersStarted = true;
+  counters.forEach((el) => {
+    const target = parseInt(el.getAttribute('data-count'), 10);
+    const duration = 1400;
+    const start = performance.now();
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      el.textContent = Math.floor(progress * target);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+const statsSection = document.getElementById('stats');
+const statsIO = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => { if (entry.isIntersecting) startCounters(); });
+}, { threshold: 0.3 });
+statsIO.observe(statsSection);
+
+// --- Newsletter (demo only, no real submission) ---
+document.getElementById('news-btn').addEventListener('click', () => {
+  const input = document.getElementById('news-email');
+  if (input.value.trim()) {
+    input.value = '';
+    input.placeholder = '¡Gracias! (demo)';
+  }
+});
+</script>
+
+</body>
+</html>
