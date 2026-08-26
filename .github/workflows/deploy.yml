@@ -41,17 +41,6 @@ jobs:
             "$DEPLOY_USER@$DEPLOY_HOST" \
             "cd ~/$DEPLOY_PATH && docker compose ps"
 
-      - name: DEBUG temporal - inspeccionar contenido y responder ruta
-        run: |
-          ssh -i ~/.ssh/deploy_key -o UserKnownHostsFile=~/.ssh/known_hosts \
-            "$DEPLOY_USER@$DEPLOY_HOST" \
-            "echo '--- contenido dentro del contenedor ---' && \
-             docker exec futbol-brutal-web find /usr/share/nginx/html -maxdepth 6 && \
-             echo '--- config activa de nginx ---' && \
-             docker exec futbol-brutal-web cat /etc/nginx/conf.d/default.conf && \
-             echo '--- curl a la ruta nueva ---' && \
-             curl -sv http://localhost:8080/iaslab/ingesoft5/despliegueprueba/ 2>&1 | tail -30"
-
       - name: Limpiar llave temporal
         if: always()
         run: rm -f ~/.ssh/deploy_key
