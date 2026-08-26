@@ -41,6 +41,23 @@ jobs:
             "$DEPLOY_USER@$DEPLOY_HOST" \
             "cd ~/$DEPLOY_PATH && docker compose ps"
 
+      - name: DEBUG temporal - probar por IP real y puertos en uso
+        run: |
+          ssh -i ~/.ssh/deploy_key -o UserKnownHostsFile=~/.ssh/known_hosts \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "echo '--- quien escucha en 8080 ---' && \
+             sudo ss -tlnp | grep ':8080' || ss -tln | grep ':8080' && \
+             echo '--- docker port ---' && \
+             docker port futbol-brutal-web && \
+             echo '--- curl con Host=localhost pero IP real ---' && \
+             curl -s -o /dev/null -w 'HTTP %{http_code}\n' http://$DEPLOY_HOST:8080/iaslab/ingesoft5/despliegueprueba/ && \
+             echo '--- curl a la raiz por IP real ---' && \
+             curl -s -o /dev/null -w 'HTTP %{http_code}\n' http://$DEPLOY_HOST:8080/ && \
+             echo '--- headers completos ruta nueva por IP real ---' && \
+             curl -sI http://$DEPLOY_HOST:8080/iaslab/ingesoft5/despliegueprueba/ && \
+             echo '--- server header (nginx version) ---' && \
+             curl -sI http://$DEPLOY_HOST:8080/ | grep -i server"
+
       - name: Limpiar llave temporal
         if: always()
         run: rm -f ~/.ssh/deploy_key
