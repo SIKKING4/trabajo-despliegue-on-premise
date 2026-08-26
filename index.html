@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FÚTBOL — Pasión Brutal</title>
+<title>Práctica de despliegue Ingesoft 5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -306,6 +306,30 @@
     background:transparent;
   }
 
+  /* ---------- TEAM PHOTO ---------- */
+  .team-photo-wrap{
+    border:3px solid var(--ink);
+    background:var(--paper);
+    box-shadow:10px 10px 0 var(--ink);
+    padding:16px;
+  }
+  .team-photo{
+    display:block;
+    width:100%;
+    height:auto;
+    border:3px solid var(--ink);
+    filter:grayscale(15%) contrast(1.05);
+  }
+  .team-caption{
+    margin-top:16px;
+    font-size:0.8rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    border-top:3px dashed var(--ink);
+    padding-top:14px;
+  }
+
   /* ---------- FOOTER ---------- */
   footer{
     border-top:var(--border) solid var(--ink);
@@ -397,6 +421,7 @@
       <li><a href="#matches">Partidos</a></li>
       <li><a href="#skills">Estilo</a></li>
       <li><a href="#ball">La Esfera</a></li>
+      <li><a href="#team">Equipo</a></li>
     </ul>
   </nav>
 
@@ -486,6 +511,17 @@
         <a class="btn" href="#" id="pulse-btn">Pulso de energía</a>
       </div>
       <div class="ball-hole"></div>
+    </div>
+  </section>
+
+  <section id="team">
+    <div class="section-head reveal">
+      <h2>Práctica de<br>Despliegue</h2>
+      <span class="tag">Ingesoft 5</span>
+    </div>
+    <div class="team-photo-wrap reveal">
+      <img class="team-photo" src="assets/equipo.jpg" alt="Equipo de Práctica de Despliegue - Ingesoft 5" loading="lazy">
+      <p class="team-caption">CI/CD con GitHub Actions, Docker y Nginx sobre un runner self-hosted — Ingeniería de Software 5.</p>
     </div>
   </section>
 
