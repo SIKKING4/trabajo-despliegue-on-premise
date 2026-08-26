@@ -41,17 +41,6 @@ jobs:
             "$DEPLOY_USER@$DEPLOY_HOST" \
             "cd ~/$DEPLOY_PATH && docker compose ps"
 
-      - name: DEBUG temporal - MAC address de la maquina destino
-        run: |
-          ssh -i ~/.ssh/deploy_key -o UserKnownHostsFile=~/.ssh/known_hosts \
-            "$DEPLOY_USER@$DEPLOY_HOST" \
-            "echo '--- IP configurada en esta maquina ---' && \
-             ip -4 addr show | grep -E 'inet |^[0-9]+:' && \
-             echo '--- MAC de cada interfaz ---' && \
-             ip link show | grep -E '^[0-9]+:|link/ether' && \
-             echo '--- hostname ---' && \
-             hostname"
-
       - name: Limpiar llave temporal
         if: always()
         run: rm -f ~/.ssh/deploy_key
